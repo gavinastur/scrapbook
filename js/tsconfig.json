@@ -1,0 +1,15 @@
+{
+  "extends": "@tsconfig/node24/tsconfig.json",
+  "compilerOptions": {
+    "rootDir": "./src",
+    "outDir": "./dist",
+    "baseUrl": "./src",
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "types": ["vitest/globals", "node"]
+  },
+  "exclude": ["lib", "dist", "node_modules", "vitest.config.ts"]
+}

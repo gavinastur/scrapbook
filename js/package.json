@@ -1,0 +1,33 @@
+{
+  "name": "scrapbook",
+  "version": "0.0.1",
+  "description": "",
+  "author": "Gavin Astur",
+  "type": "module",
+  "dependencies": {},
+  "devDependencies": {
+    "@biomejs/biome": "2.4.8",
+    "@tsconfig/node24": "24.0.4",
+    "@types/node": "24.12.0",
+    "@vitest/coverage-v8": "4.1.0",
+    "@vitest/ui": "4.1.0",
+    "typescript": "5.9.3",
+    "vitest": "4.1.0"
+  },
+  "scripts": {
+    "build": "npm run tsc",
+    "lint": "npm run biome:check:fix",
+    "lint:ci": "npm run biome:check",
+    "biome:check": "biome check .",
+    "biome:check:fix": "biome check --write .",
+    "pretty": "biome format --write .",
+    "prettier:ci": "npm run pretty",
+    "test": "vitest run --coverage",
+    "test:ci": "vitest run --silent --coverage",
+    "tsc": "tsc"
+  },
+  "engines": {
+    "node": "^24.0.0",
+    "npm": "^11.0.0"
+  }
+}
