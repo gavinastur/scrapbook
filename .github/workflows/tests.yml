@@ -1,0 +1,270 @@
+name: Tests
+
+permissions:
+  actions: read
+  checks: write
+  contents: write
+  pull-requests: write
+
+on:
+  workflow_call:
+    inputs:
+      install-command:
+        required: false
+        type: string
+        description:
+          "Used to override the default command to install your dependencies e.g. npm install"
+        default: "npm ci --quiet"
+      path:
+        required: false
+        type: string
+        description: "Relative path from project root to your node application's source files"
+        default: "."
+      lint-enable:
+        required: false
+        type: boolean
+        description: "To disable the lint job set to false"
+        default: true
+      lint-command:
+        required: false
+        type: string
+        description:
+          "Use to execute a standard ES Lint command (e.g. npm lint:ci)"
+        default: "npm run lint:ci"
+      test-enable:
+        required: false
+        type: boolean
+        description: "To disable the unit-tests job set to false"
+        default: true
+      test-command:
+        required: false
+        type: string
+        description: "Used to override the default command to run your unit tests"
+        default: "npm run test:ci"
+      coverage-report-enable:
+        required: false
+        type: boolean
+        description:
+          "To enable PR coverage report set to true. Requires that the test-command generates a 'coverage/clover.xml' file."
+        default: true
+      coverage-only-list-changed-files:
+        type: boolean
+        description: "For the PR coverage report, only list changed files."
+        required: false
+        default: false
+      tsc-enable:
+        required: false
+        type: boolean
+        description: "To disable the tsc job set to false"
+        default: true
+      tsc-filter-mode:
+        required: false
+        type: string
+        description: |
+          Filtering mode for the reviewdog command (added, diff_context, file, nofilter). 
+          TypeScript errors will sometimes appear in lines or files that weren't modified 
+          by the commit the workflow run is associated with, these will be included
+          with the default 'nofilter' option.
+        default: 'nofilter'
+      tsc-flags:
+        required: false
+        type: string
+        description: "Provide additional flags to the tsc command"
+      tsc-reporter:
+        required: false
+        type: string
+        description: "Choose the reporter to use for tsc (github-pr-review, github-pr-check, github-check)"
+        default: "github-check"
+      tsc-level:
+        required: false
+        type: string
+        description: "Choose the level of tsc to use (error, warning, info)"
+        default: "error"
+      tsc-fail-on-error:
+        required: false
+        type: boolean
+        description: "To not fail the job on tsc errors set to false"
+        default: true
+      artifact-prefix:
+        type: string
+        description: "A prefix to apply to the name of the artifacts to upload (useful for matrix builds)"
+        required: false
+      fetch-depth:
+        required: false
+        type: number
+        description: "Number of commits to fetch. 0 indicates all history for all branches and tags."
+        default: 1
+    secrets:
+      auth-token:
+        required: false
+        description: "Arbitrary token to be exposed as environment variable in the format VARIABLE=value"
+      auth-token-2:
+        required: false
+        description: "Arbitrary token to be exposed as environment variable in the format VARIABLE=value"
+    outputs:
+      ref-slug:
+        description: "A URL sanitized version of the github ref"
+        value: ${{ jobs.lint.outputs.ref-slug }}
+      short-sha:
+        description: "Captures the short SHA for use in this or later workflow jobs"
+        value: ${{ jobs.lint.outputs.short-sha }}
+jobs:
+  lint:
+    name: Lint
+    if: ${{ inputs.lint-enable }}
+    runs-on: ubuntu-24.04
+    outputs:
+      short-sha: ${{ env.GITHUB_SHA_SHORT }}
+      ref-slug: ${{ env.GITHUB_REF_SLUG_URL }}
+    steps:
+      - name: Checkout Source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: ${{ inputs.fetch-depth }}
+
+      - name: Slugify github variables
+        uses: rlespinasse/github-slug-action@9e7def61550737ba68c62d34a32dd31792e3f429 # v5.5.0
+
+      - name: Setup NodeJS
+        uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Export auth token 1
+        env:
+          TOKEN: ${{ secrets.auth-token }}
+        if: ${{ env.TOKEN != '' }}
+        run: |
+          echo "::add-mask::${TOKEN#*=}"
+          echo "${{ env.TOKEN }}" >> $GITHUB_ENV
+
+      - name: Export auth token 2
+        env:
+          TOKEN: ${{ secrets.auth-token-2 }}
+        if: ${{ env.TOKEN != '' }}
+        run: |
+          echo "::add-mask::${TOKEN#*=}"
+          echo "${{ env.TOKEN }}" >> $GITHUB_ENV
+
+      - name: Install Dependencies
+        working-directory: ${{ inputs.path }}
+        env:
+          FONTAWESOME_PACKAGE_TOKEN: ${{ secrets.FONTAWESOME_PACKAGE_TOKEN }}
+        run: |
+          ${{ inputs.install-command }}
+
+      - name: Execute Lint (command)
+        working-directory: ${{ inputs.path }}
+        if: ${{ inputs.lint-command }}
+        run: |
+          ${{ inputs.lint-command }}
+  tests:
+    name: Tests
+    runs-on: ubuntu-24.04
+    if: ${{ inputs.test-enable }}
+    steps:
+      - name: Checkout Source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: ${{ inputs.fetch-depth }}
+
+      - name: Setup NodeJS
+        uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Export variables
+        run: |
+          echo "${{ secrets.auth-token }}" >> $GITHUB_ENV
+          echo "${{ secrets.auth-token-2 }}" >> $GITHUB_ENV
+
+      - name: Install Dependencies
+        working-directory: ${{ inputs.path }}
+        run: |
+          ${{ inputs.install-command }}
+
+      - name: Execute Tests
+        working-directory: ${{ inputs.path }}
+        run: |
+          ${{ inputs.test-command }}
+
+      - name: Generate Coverage Report
+        uses: clearlyip/code-coverage-report-action@v6
+        id: code_coverage_report_action
+        if: inputs.coverage-report-enable && github.actor != 'renovate[bot]'
+        with:
+          filename: ${{ inputs.path }}/coverage/clover.xml
+          artifact_download_workflow_names: ${{ github.workflow }}
+          only_list_changed_files: ${{ inputs.coverage-only-list-changed-files }}
+
+      - name: Add Coverage PR Comment
+        uses: marocchino/sticky-pull-request-comment@d4d6b0936434b21bc8345ad45a440c5f7d2c40ff # v3.0.3
+        if:
+          inputs.coverage-report-enable && steps.code_coverage_report_action.outputs.file != '' &&
+          github.event_name == 'pull_request' && (success() || failure())
+        with:
+          recreate: true
+          path: code-coverage-results.md
+
+      - name: Upload Unit Test Reports
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        if: always()
+        with:
+          name: "${{ inputs.artifact-prefix }}Unit Test & Coverage Reports"
+          path: |
+            ${{ inputs.path }}/junit.xml
+            ${{ inputs.path }}/test-report.html
+            ${{ inputs.path }}/coverage/test-report.html
+            ${{ inputs.path }}/coverage/clover.xml
+  tsc:
+    name: TSC
+    if: ${{ inputs.tsc-enable }}
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout Source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: ${{ inputs.fetch-depth }}
+
+      - name: Slugify github variables
+        uses: rlespinasse/github-slug-action@9e7def61550737ba68c62d34a32dd31792e3f429 # v5.5.0
+
+      - name: Setup NodeJS
+        uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Export auth token 1
+        env:
+          TOKEN: ${{ secrets.auth-token }}
+        if: ${{ env.TOKEN != '' }}
+        run: |
+          echo "::add-mask::${TOKEN#*=}"
+          echo "${{ env.TOKEN }}" >> $GITHUB_ENV
+
+      - name: Export auth token 2
+        env:
+          TOKEN: ${{ secrets.auth-token-2 }}
+        if: ${{ env.TOKEN != '' }}
+        run: |
+          echo "::add-mask::${TOKEN#*=}"
+          echo "${{ env.TOKEN }}" >> $GITHUB_ENV
+
+      - name: Install Dependencies
+        working-directory: ${{ inputs.path }}
+        run: |
+          ${{ inputs.install-command }}
+
+      - name: Execute TSC
+        uses: EPMatt/reviewdog-action-tsc@63d923a3c5b4497671940b8874f58a404e2351b5 # v1.11.0
+        with:
+          workdir: ${{ inputs.path }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          reporter: ${{ inputs.tsc-reporter }}
+          filter_mode: ${{ inputs.tsc-filter-mode }}
+          tsc_flags: ${{ inputs.tsc-flags }}
+          level: ${{ inputs.tsc-level }}
+          fail_on_error: ${{ inputs.tsc-fail-on-error }}
