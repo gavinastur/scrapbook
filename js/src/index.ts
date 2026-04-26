@@ -87,46 +87,19 @@ export const convert = (s: string, numRows: number): string => {
 export const lengthOfLongestSubstring = (s: string): number => {
   if (!s) return 0;
   if (s.length === 1) return 1;
-  let idenitcal = true;
-  for (let i = 0; i < s.length; i++) {
-    if (s[i + 1]) {
-      const curr = s[i];
-      if (curr === s[i + 1]) {
-      } else {
-        idenitcal = false;
-        break;
-      }
-    }
-  }
-
-  if (idenitcal) return 1;
-
-  let currMatch = '';
-  let match = '';
+  const seenMap = new Map<string, number>();
+  let maxLength = 0;
+  let start = 0;
+  // console.log('->', s);
   for (let i = 0; i < s.length; i++) {
     const curr = s[i];
-    const next = s[i + 1];
-    const currPos = currMatch.indexOf(next);
-    if (curr && next && curr !== next && currPos === 0) {
-      //do nothing
-      console.log(currMatch);
-    } else if (curr && next && curr !== next && currPos === -1) {
-      if (currMatch) {
-        currMatch = currMatch + next;
-      } else {
-        currMatch = curr + next;
-      }
-      console.log(currMatch);
-    } else {
-      if (currPos === 1) {
-        // console.log(currMatch, currPos);
-        currMatch = curr;
-      }
-      match = currMatch.length > match.length ? currMatch : match;
-      currMatch = '';
+    const seen = seenMap.get(curr);
+    if (seen !== undefined && seen >= start) {
+      start = seen + 1;
     }
+    seenMap.set(curr, i);
+    maxLength = Math.max(maxLength, i - start + 1);
   }
-  console.log(match);
-
-  return match.length;
+  // console.log('<-', maxLength);
+  return maxLength;
 };
