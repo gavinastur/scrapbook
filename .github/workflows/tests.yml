@@ -128,8 +128,9 @@ jobs:
       - name: Setup NodeJS
         uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
         with:
-          node-version-file: .nvmrc
+          node-version-file: ${{ inputs.path }}/.nvmrc
           cache: npm
+          cache-dependency-path: ${{ inputs.path }}/package-lock.json
 
       - name: Export auth token 1
         env:
@@ -172,8 +173,9 @@ jobs:
       - name: Setup NodeJS
         uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
         with:
-          node-version-file: .nvmrc
+          node-version-file: ${{ inputs.path }}/.nvmrc
           cache: npm
+          cache-dependency-path: ${{ inputs.path }}/package-lock.json
 
       - name: Export variables
         run: |
@@ -234,8 +236,9 @@ jobs:
       - name: Setup NodeJS
         uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
         with:
-          node-version-file: .nvmrc
+          node-version-file: ${{ inputs.path }}/.nvmrc
           cache: npm
+          cache-dependency-path: ${{ inputs.path }}/package-lock.json
 
       - name: Export auth token 1
         env:
