@@ -1,4 +1,4 @@
-import { addTwoNumbers, convert, isMatch, lengthOfLongestSubstring, toArray, toList, twoSum } from './index.js';
+import { addTwoNumbers, convert, findMedianSortedArrays, isMatch, lengthOfLongestSubstring, toArray, toList, twoSum } from './index.js';
 
 describe('all', () => {
   describe('twoSum', () => {
@@ -231,6 +231,52 @@ describe('all', () => {
 
     it('returns the correct length when the window shifts mid-string', () => {
       expect(lengthOfLongestSubstring('anviaj')).toBe(5);
+    });
+  });
+
+  describe('findMedianSortedArrays', () => {
+    it('returns the median of two arrays of equal length', () => {
+      expect(findMedianSortedArrays([1, 3], [2, 4])).toBe(2.5);
+    });
+
+    it('returns the median when the combined length is odd', () => {
+      expect(findMedianSortedArrays([1, 3], [2])).toBe(2);
+    });
+
+    it('returns the median when one array is empty', () => {
+      expect(findMedianSortedArrays([], [1, 2, 3])).toBe(2);
+    });
+
+    it('returns the median when the other array is empty', () => {
+      expect(findMedianSortedArrays([1, 2, 3], [])).toBe(2);
+    });
+
+    it('returns the correct median for arrays of different lengths', () => {
+      expect(findMedianSortedArrays([1, 2], [3, 4, 5, 6])).toBe(3.5);
+    });
+
+    it('returns the correct median when all elements are the same', () => {
+      expect(findMedianSortedArrays([2, 2], [2, 2])).toBe(2);
+    });
+
+    it('returns the correct median when arrays contain negative numbers', () => {
+      expect(findMedianSortedArrays([-5, -1], [-3, 0])).toBe(-2);
+    });
+
+    it('returns the correct median when arrays contain pos numbers', () => {
+      expect(findMedianSortedArrays([5, 1], [3, 0])).toBe(2);
+    });
+
+    it('returns the correct median when one array has a single element', () => {
+      expect(findMedianSortedArrays([5], [1, 2, 3, 4])).toBe(3);
+    });
+
+    it('returns the correct median when elements do not interleave', () => {
+      expect(findMedianSortedArrays([1, 2], [3, 4])).toBe(2.5);
+    });
+
+    it('returns the correct median when both arrays contain duplicate values', () => {
+      expect(findMedianSortedArrays([2, 2, 4, 4], [2, 2, 2, 4, 4])).toBe(2);
     });
   });
 });
