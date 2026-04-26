@@ -103,3 +103,9 @@ export const lengthOfLongestSubstring = (s: string): number => {
   // console.log('<-', maxLength);
   return maxLength;
 };
+
+export const findMedianSortedArrays = (nums1: number[], nums2: number[]): number => {
+  const arr = [...nums1, ...nums2].sort((a, b) => a - b);
+  const mid = Math.floor(arr.length / 2);
+  return arr.length % 2 === 0 ? (arr[mid - 1] + arr[mid]) / 2 : arr[mid];
+};
