@@ -1,0 +1,3 @@
+## delete branches
+git branch | grep chore/ |  awk '{print $1}' | xargs git branch -D
+git branch | grep -E -- 'ci/|docs/|fix/|chore/|feat/|rv8/' |  awk '{print $1}' | xargs git branch -D
