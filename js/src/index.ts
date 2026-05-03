@@ -109,3 +109,39 @@ export const findMedianSortedArrays = (nums1: number[], nums2: number[]): number
   const mid = Math.floor(arr.length / 2);
   return arr.length % 2 === 0 ? (arr[mid - 1] + arr[mid]) / 2 : arr[mid];
 };
+
+export const fullJustify = (words: string[], maxWidth: number): string[] => {
+  const rows: string[] = [];
+  let str = '';
+  let spaceCount = 0;
+
+  for (let i = 0; i < words.length; i++) {
+    spaceCount += words[i].length;
+    const next = words[i + 1];
+
+    str = str ? `${str} ${words[i]}` : words[i];
+
+    const isLastLine = !next;
+    const lineFull = next && str.length + next.length + 1 > maxWidth;
+
+    if (isLastLine || lineFull) {
+      const gaps = (str.match(/\s/g) ?? []).length;
+
+      const shouldJustify = !isLastLine || rows.length === 0;
+      if (shouldJustify && gaps > 0) {
+        const totalSpaces = maxWidth - spaceCount;
+        const spacesPerGap = Math.floor(totalSpaces / gaps);
+        const extraSpaces = totalSpaces % gaps;
+        let gapIndex = 0;
+        str = str.replace(/\s/g, () => ' '.repeat(spacesPerGap + (gapIndex++ < extraSpaces ? 1 : 0)));
+      } else {
+        str = str.padEnd(maxWidth);
+      }
+
+      rows.push(str);
+      str = '';
+      spaceCount = 0;
+    }
+  }
+  return rows;
+};

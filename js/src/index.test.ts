@@ -1,4 +1,14 @@
-import { addTwoNumbers, convert, findMedianSortedArrays, isMatch, lengthOfLongestSubstring, toArray, toList, twoSum } from './index.js';
+import {
+  addTwoNumbers,
+  convert,
+  findMedianSortedArrays,
+  fullJustify,
+  isMatch,
+  lengthOfLongestSubstring,
+  toArray,
+  toList,
+  twoSum,
+} from './index.js';
 
 describe('all', () => {
   describe('twoSum', () => {
@@ -277,6 +287,28 @@ describe('all', () => {
 
     it('returns the correct median when both arrays contain duplicate values', () => {
       expect(findMedianSortedArrays([2, 2, 4, 4], [2, 2, 2, 4, 4])).toBe(2);
+    });
+  });
+
+  describe('fullJustify', () => {
+    it('justifies multiple words across one line', () => {
+      expect(fullJustify(['This', 'is', 'an'], 16)).toEqual(['This    is    an']);
+    });
+
+    it('justifies multiple words across multiple lines', () => {
+      expect(fullJustify(['This', 'is', 'an', 'example', 'of', 'text', 'justification.'], 16)).toEqual([
+        'This    is    an',
+        'example  of text',
+        'justification.  ',
+      ]);
+    });
+
+    it('justifies multiple words across multiple lines ..', () => {
+      expect(fullJustify(['What', 'must', 'be', 'acknowledgment', 'shall', 'be'], 16)).toEqual([
+        'What   must   be',
+        'acknowledgment  ',
+        'shall be        ',
+      ]);
     });
   });
 });
