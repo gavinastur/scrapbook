@@ -5,6 +5,7 @@ import {
   fullJustify,
   isMatch,
   lengthOfLongestSubstring,
+  longestValidParentheses,
   toArray,
   toList,
   twoSum,
@@ -309,6 +310,64 @@ describe('all', () => {
         'acknowledgment  ',
         'shall be        ',
       ]);
+    });
+  });
+
+  describe('longestValidParentheses', () => {
+    it('returns the length of the longest valid parentheses substring', () => {
+      expect(longestValidParentheses('(()')).toBe(2);
+    });
+
+    it('returns the correct length when the valid substring is in the middle', () => {
+      expect(longestValidParentheses(')()())')).toBe(4);
+    });
+
+    it('returns 0 for an empty string', () => {
+      expect(longestValidParentheses('')).toBe(0);
+    });
+
+    it('returns 0 when there are no valid parentheses', () => {
+      expect(longestValidParentheses('(((')).toBe(0);
+    });
+
+    it('returns 0 when all parentheses are closing', () => {
+      expect(longestValidParentheses(')))')).toBe(0);
+    });
+
+    it('returns the full length when the entire string is valid', () => {
+      expect(longestValidParentheses('()()')).toBe(4);
+    });
+
+    it('returns the correct length for nested valid parentheses', () => {
+      expect(longestValidParentheses('(())')).toBe(4);
+    });
+
+    it('returns the correct length when valid substrings are separated by an invalid character', () => {
+      expect(longestValidParentheses('()(())')).toBe(6);
+    });
+
+    it('returns the correct length when valid substrings are separated by an invalid character..', () => {
+      expect(longestValidParentheses('()(()')).toBe(2);
+    });
+
+    it('returns the correct length when valid substrings are separated by an invalid character...', () => {
+      expect(longestValidParentheses(')()())()()(')).toBe(4);
+    });
+
+    it('returns the correct length when valid substrings are separated by an invalid character....', () => {
+      expect(longestValidParentheses('(()))())(')).toBe(4);
+    });
+
+    it('returns the correct length for a single valid pair', () => {
+      expect(longestValidParentheses('()')).toBe(2);
+    });
+
+    it('returns 0 for a single opening parenthesis', () => {
+      expect(longestValidParentheses('(')).toBe(0);
+    });
+
+    it('returns 0 for a single closing parenthesis', () => {
+      expect(longestValidParentheses(')')).toBe(0);
     });
   });
 });
