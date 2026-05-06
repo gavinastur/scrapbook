@@ -1,4 +1,15 @@
-import { addTwoNumbers, convert, findMedianSortedArrays, isMatch, lengthOfLongestSubstring, toArray, toList, twoSum } from './index.js';
+import {
+  addTwoNumbers,
+  convert,
+  findMedianSortedArrays,
+  fullJustify,
+  isMatch,
+  lengthOfLongestSubstring,
+  longestValidParentheses,
+  toArray,
+  toList,
+  twoSum,
+} from './index.js';
 
 describe('all', () => {
   describe('twoSum', () => {
@@ -277,6 +288,86 @@ describe('all', () => {
 
     it('returns the correct median when both arrays contain duplicate values', () => {
       expect(findMedianSortedArrays([2, 2, 4, 4], [2, 2, 2, 4, 4])).toBe(2);
+    });
+  });
+
+  describe('fullJustify', () => {
+    it('justifies multiple words across one line', () => {
+      expect(fullJustify(['This', 'is', 'an'], 16)).toEqual(['This    is    an']);
+    });
+
+    it('justifies multiple words across multiple lines', () => {
+      expect(fullJustify(['This', 'is', 'an', 'example', 'of', 'text', 'justification.'], 16)).toEqual([
+        'This    is    an',
+        'example  of text',
+        'justification.  ',
+      ]);
+    });
+
+    it('justifies multiple words across multiple lines ..', () => {
+      expect(fullJustify(['What', 'must', 'be', 'acknowledgment', 'shall', 'be'], 16)).toEqual([
+        'What   must   be',
+        'acknowledgment  ',
+        'shall be        ',
+      ]);
+    });
+  });
+
+  describe('longestValidParentheses', () => {
+    it('returns the length of the longest valid parentheses substring', () => {
+      expect(longestValidParentheses('(()')).toBe(2);
+    });
+
+    it('returns the correct length when the valid substring is in the middle', () => {
+      expect(longestValidParentheses(')()())')).toBe(4);
+    });
+
+    it('returns 0 for an empty string', () => {
+      expect(longestValidParentheses('')).toBe(0);
+    });
+
+    it('returns 0 when there are no valid parentheses', () => {
+      expect(longestValidParentheses('(((')).toBe(0);
+    });
+
+    it('returns 0 when all parentheses are closing', () => {
+      expect(longestValidParentheses(')))')).toBe(0);
+    });
+
+    it('returns the full length when the entire string is valid', () => {
+      expect(longestValidParentheses('()()')).toBe(4);
+    });
+
+    it('returns the correct length for nested valid parentheses', () => {
+      expect(longestValidParentheses('(())')).toBe(4);
+    });
+
+    it('returns the correct length when valid substrings are separated by an invalid character', () => {
+      expect(longestValidParentheses('()(())')).toBe(6);
+    });
+
+    it('returns the correct length when valid substrings are separated by an invalid character..', () => {
+      expect(longestValidParentheses('()(()')).toBe(2);
+    });
+
+    it('returns the correct length when valid substrings are separated by an invalid character...', () => {
+      expect(longestValidParentheses(')()())()()(')).toBe(4);
+    });
+
+    it('returns the correct length when valid substrings are separated by an invalid character....', () => {
+      expect(longestValidParentheses('(()))())(')).toBe(4);
+    });
+
+    it('returns the correct length for a single valid pair', () => {
+      expect(longestValidParentheses('()')).toBe(2);
+    });
+
+    it('returns 0 for a single opening parenthesis', () => {
+      expect(longestValidParentheses('(')).toBe(0);
+    });
+
+    it('returns 0 for a single closing parenthesis', () => {
+      expect(longestValidParentheses(')')).toBe(0);
     });
   });
 });
