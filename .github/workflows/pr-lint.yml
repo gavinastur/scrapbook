@@ -12,4 +12,4 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-      - uses: gavinastur/pr-linter-action@66de6937c3647f7cffd18aadd255ce804e9f764f # v1.2.1
+      - uses: gavinastur/pr-linter-action@0728362dc876061b82c58e5b0219489b3b8c1a01 # v1.2.2
